@@ -267,6 +267,38 @@ function reset() {
   render(time);
 }
 
+function readSettings() {
+  const search = window.location.search;
+  if (search) {
+    (search.startsWith('?') ? search.substring(1) : search).split('&').forEach((pair) => {
+      const keyValue = pair.split('=').map(decodeURIComponent);
+      const key = keyValue[0];
+      const value = keyValue[1];
+      const origValue = settings[key];
+      if (origValue !== undefined) {
+        if (typeof origValue === 'number') {
+          try {
+            settings[key] = parseFloat(value);
+          } catch (e) {
+          }
+        } else {
+          settings[key] = value;
+        }
+      }
+    });
+  }
+}
+
+function writeSettings() {
+  const search = Object.keys(settings).map((key) => {
+    return `${encodeURIComponent(key)}=${encodeURIComponent(settings[key])}`;
+  }).join('&');
+  window.history.replaceState(settings, '', 
+    `${window.location.origin}${window.location.pathname}?${search}`);
+}
+
+readSettings();
+writeSettings();
 reset();
 
 elems.reset.addEventListener('click', reset);
