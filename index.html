@@ -1,0 +1,284 @@
+<html lang="en">
+  <head>
+    <meta charset="utf8">
+    <style>
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+body {
+  margin: 0;
+  background-color: #0A0;
+  color: white;
+  font-family: sans-serif;
+}
+.outer {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.toolbar {
+  background: rgba(0,0,0,.2);
+  padding: 10px;
+}
+.round-time {
+  gbackground: #0E0;
+  width: 100%;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  flex: 1 1 auto;
+  align-items: center;
+  font-size: 40vh;
+}
+.round-time .mins,
+.round-time .secs {
+  flex: 1 1 40%;
+}
+.round-time .mins {
+  gbackground: #0D0;
+  text-align: right;
+}
+.round-time .colon {
+  gbackground: #0C0;
+  text-align: center;
+}
+.round-time .secs {
+  gbackground: #0B0;
+}
+.parts {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+.parts>div {
+  flex: 1 1 auto;
+}
+.parts .part-heading {
+  font-size: 5vw;
+}
+.parts .value {
+  font-size: 8vw;
+}
+.parts .elapsed {
+  gbackground: #0A0;
+}
+.parts .rounds {
+  gbackground: #090;
+  text-align: center;
+}
+.parts .remaining {
+  gbackground: #080;
+  text-align: right;
+}
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  font-size: 6.5vw;
+  gborder-top: 1px solid white;
+}
+.controls>div {
+  display: flex;
+  align-items: center;
+}
+.controls>div>div {
+  flex: 1 1 auto;
+}
+.controls .reset,
+.controls .start-stop {
+  flex: 1 1 10%;
+  text-align: center;
+  background: rgba(0, 0, 0, .2);
+}
+
+.controls .current,
+.controls .next {
+  flex: 1 1 40%;
+  text-align: center;
+}
+
+.controls .reset {
+  gbackground: #070;
+}
+.controls .current {
+  background: rgba(0, 0, 0, .3);
+}
+.controls .next {
+  background: rgba(0, 0, 0, .4);
+}
+.controls .start-stop {
+  gbackground: #040;
+}
+  </style>
+  </head>
+  <body>
+    <div class="outer">
+      <div class="toolbar">
+          toolbar
+      </div>
+      <div class="round-time">
+        <div class="mins">00</div>
+        <div class="colon">:</div>
+        <div class="secs">00</div>
+      </div>
+      <div class="parts">
+        <div class="elapsed">
+          <div class="part-heading">elapsed</div>
+          <div class="value">00:00</div>
+        </div>
+        <div class="rounds">
+          <div class="part-heading">interval</div>
+          <div class="value">0/0</div>
+        </div>
+        <div class="remaining">
+          <div class="part-heading">remaining</div>
+          <div class="value">00:00</div>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="reset">
+          <div class="reset">⟳</div>
+        </div>
+        <div class="current">
+          <div>Round 1</div>
+        </div>
+        <div class="next">
+          <div>Break 1</div>
+        </div>
+        <div class="start-stop">
+          <div class="start">▶</div>
+          <div class="stop" style="display: none;">⏹</div>
+        </div>
+      </div>
+
+    </div>
+  </body>
+  <script>
+const $ = document.querySelector.bind(document);
+const elems = getElements({
+  body: 'body',
+  mins: '.round-time .mins',
+  secs: '.round-time .secs',
+  elapsed: '.parts .elapsed .value',
+  rounds: '.parts .rounds .value',
+  remaining: '.parts .remaining .value',
+  current: '.controls .current>div',
+  next: '.controls .next>div',
+  reset: '.controls .reset',
+  start: '.controls .start',
+  stop: '.controls .stop',
+});
+const settings = {
+  rounds: 30,
+  duration: 50,
+  pause: 10,
+};
+let then = 0;
+let time = 0;
+let requestId;
+
+function update(now) {
+  requestId = undefined;
+  const elapsedTime = (now - then) * 0.001;
+  then = now;
+
+  time += elapsedTime;
+
+  render(time);
+
+  run();
+}
+
+function render(time) {
+  const roundDuration = settings.duration + settings.pause;
+  const totalTime = getTotalTime();
+  const remainingTime = Math.max(0, totalTime - time);
+  const isDone = remainingTime === 0;
+  if (isDone) {
+    time = totalTime;
+    stop();
+  }
+  const roundPauseTime = time % roundDuration;
+  const isInterval = roundPauseTime <= settings.duration;
+  const roundTime = isInterval 
+    ? settings.duration - roundPauseTime 
+    : settings.pause - (roundPauseTime - settings.duration);
+
+  const round = (time / roundDuration) + 1 | 0;
+  elems.rounds.textContent = `${round}/${settings.rounds}`;
+
+  const clock = secsMinsHours(roundTime + 0.99);
+  elems.mins.textContent = clock.mins;
+  elems.secs.textContent = clock.secs;
+
+  const elapsed = secsMinsHours(time);
+  const remain = secsMinsHours(remainingTime + 0.99);
+  elems.elapsed.textContent = `${elapsed.mins}:${elapsed.secs}`;
+  elems.remaining.textContent = `${remain.mins}:${remain.secs}`;
+
+  elems.body.style.background = isDone
+    ? '#444'
+    : (isInterval ? '#0A0' : '#F00');
+}
+
+function getTotalTime() {
+  return settings.duration * settings.rounds +
+         settings.pause * (settings.rounds - 1);
+}
+
+function secsMinsHours(time) {
+  return {
+    hours: (time / 60 / 60 | 0).toFixed(0).padStart(2, '0'),
+    mins: (time / 60 % 60 | 0).toFixed(0).padStart(2, '0'),
+    secs: (time % 60 | 0).toFixed(0).padStart(2, '0'),
+  };
+}
+
+function stop() {
+  if (requestId) {
+    cancelAnimationFrame(requestId);
+    requestId = undefined;
+  }
+  elems.stop.style.display = 'none';
+  elems.start.style.display = 'block';
+}
+
+function run() {
+  if (!requestId) {
+    requestId = requestAnimationFrame(update);
+  }
+}
+
+function start() {
+  elems.stop.style.display = 'block';
+  elems.start.style.display = 'none';
+  then = performance.now();
+  run();
+}
+
+function reset() {
+  time = 0;
+  stop();
+  render(time);
+}
+
+reset();
+
+elems.reset.addEventListener('click', reset);
+elems.start.addEventListener('click', start);
+elems.stop.addEventListener('click', stop);
+
+function getElements(spec) {
+  const elems = {};
+  Object.keys(spec).forEach((key) => {
+    elems[key] = document.querySelector(spec[key]);
+  });
+  return elems;
+}
+  </script>
+</html>
