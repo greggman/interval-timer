@@ -1,0 +1,32 @@
+{
+  "name": "interval-timer",
+  "version": "0.0.0",
+  "description": "interval-timer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/greggman/interval-timer.git"
+  },
+  "keywords": [
+    "training",
+    "timer",
+    "interval",
+    "interval-timer",
+    "workout",
+    "excersize"
+  ],
+  "author": "Gregg Tavares",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/greggman/interval-timer/issues"
+  },
+  "homepage": "https://github.com/greggman/interval-timer#readme",
+  "devDependencies": {
+    "webpack": "^3.10.0"
+  },
+  "dependencies": {
+  }
+}
