@@ -194,8 +194,10 @@ const elems = getElements({
   elapsed: '.parts .elapsed .value',
   rounds: '.parts .rounds .value',
   remaining: '.parts .remaining .value',
-  current: '.controls .current>div',
-  next: '.controls .next>div',
+  current: '.controls .current',
+  next: '.controls .next',
+  currentText: '.controls .current>div',
+  nextText: '.controls .next>div',
   reset: '.controls .reset',
   start: '.controls .start',
   stop: '.controls .stop',
@@ -205,20 +207,39 @@ const settings = {
   duration: 50,
   pause: 10,
 };
-let then = 0;
-let time = 0;
-let requestId;
-let wasInterval;
-let done = false;
+const g = {
+  then: 0,
+  time: 0,
+  requestId: undefined,
+  wasInterval: undefined,
+  done: false,
+};
 
 function update(now) {
-  requestId = undefined;
-  const elapsedTime = (now - then) * 0.001;
-  then = now;
+  g.requestId = undefined;
+  const elapsedTime = (now - g.then) * 0.001;
+  g.then = now;
 
-  time += elapsedTime;
+  g.time += elapsedTime;
 
-  render(time);
+  const t = getTimerInfo(g.time);
+  if (t.isDone) {
+    g.time = t.totalTime;
+    stop();
+    if (!g.done) {
+      g.done = true;
+      setTimeout(longBeep, 0);
+      setTimeout(longBeep, 1000);
+      setTimeout(longBeep, 2000);
+    }
+  }
+
+  if (t.isInterval !== g.wasInterval) {
+    g.wasInterval = t.isInterval;
+    audioManager.playSound('longBeep');
+  }
+
+  render(g.time);
 
   run();
 }
@@ -228,47 +249,52 @@ function longBeep() {
 }
 
 function render(time) {
-  const roundDuration = settings.duration + settings.pause;
-  const totalTime = getTotalTime();
-  const remainingTime = Math.max(0, totalTime - time);
-  const isDone = remainingTime === 0;
-  if (isDone) {
-    time = totalTime;
-    stop();
-    if (!done) {
-      done = true;
-      setTimeout(longBeep, 0);
-      setTimeout(longBeep, 1000);
-      setTimeout(longBeep, 2000);
-    }
-  }
-  const roundPauseTime = time % roundDuration;
-  const isInterval = roundPauseTime <= settings.duration;
+  const t = getTimerInfo(time);
 
-  if (isInterval !== wasInterval) {
-    wasInterval = isInterval;
-    audioManager.playSound('longBeep');
-  }
+  elems.rounds.textContent = `${t.round}/${settings.rounds}`;
 
-  const roundTime = isInterval 
-    ? settings.duration - roundPauseTime 
-    : settings.pause - (roundPauseTime - settings.duration);
-
-  const round = (time / roundDuration) + 1 | 0;
-  elems.rounds.textContent = `${round}/${settings.rounds}`;
-
-  const clock = secsMinsHours(roundTime + 0.99);
+  const clock = secsMinsHours(t.roundTime + 0.99);
   elems.mins.textContent = clock.mins;
   elems.secs.textContent = clock.secs;
 
   const elapsed = secsMinsHours(time);
-  const remain = secsMinsHours(remainingTime + 0.99);
+  const remain = secsMinsHours(t.remainingTime + 0.99);
   elems.elapsed.textContent = `${elapsed.mins}:${elapsed.secs}`;
   elems.remaining.textContent = `${remain.mins}:${remain.secs}`;
 
-  elems.body.style.background = isDone
+  elems.body.style.background = t.isDone
     ? '#444'
-    : (isInterval ? '#0A0' : '#F00');
+    : (t.isInterval ? '#0A0' : '#F00');
+
+  elems.currentText.textContent = t.isDone ? 'End' : `${t.isInterval ? "Round" : "Break"}${t.round}`;
+  elems.nextText.textContent = t.isDone
+    ? ''
+    : (t.round === settings.rounds
+         ? 'End'
+         : `${t.isInterval ? "Break" : "Round"}${t.round + (t.isInterval ? 0 : 1)}`);
+}
+
+function getTimerInfo(time) {
+  const roundDuration = settings.duration + settings.pause;
+  const totalTime = getTotalTime();
+  const remainingTime = Math.max(0, totalTime - time);
+  const isDone = remainingTime === 0;
+  const roundPauseTime = time % roundDuration;
+  const isInterval = roundPauseTime <= settings.duration;
+  const round = (time / roundDuration) + 1 | 0;
+  const roundTime = isInterval
+    ? settings.duration - roundPauseTime
+    : settings.pause - (roundPauseTime - settings.duration);
+  return {
+    round,           // round number
+    roundDuration,   // time of one round + pause
+    totalTime,       // time of entire workout
+    remainingTime,   // remaing time of entire workout
+    isDone,          // true if no time left
+    roundPauseTime,  // time in this (round + pause)
+    isInterval,      // true if interval
+    roundTime,       // time in this rouud OR pause
+  };
 }
 
 function getTotalTime() {
@@ -285,33 +311,33 @@ function secsMinsHours(time) {
 }
 
 function stop() {
-  if (requestId) {
-    cancelAnimationFrame(requestId);
-    requestId = undefined;
+  if (g.requestId) {
+    cancelAnimationFrame(g.requestId);
+    g.requestId = undefined;
   }
   elems.stop.style.display = 'none';
   elems.start.style.display = 'block';
 }
 
 function run() {
-  if (!requestId) {
-    requestId = requestAnimationFrame(update);
+  if (!g.requestId) {
+    g.requestId = requestAnimationFrame(update);
   }
 }
 
 function start() {
   elems.stop.style.display = 'block';
   elems.start.style.display = 'none';
-  then = performance.now();
+  g.then = performance.now();
   run();
 }
 
 function reset() {
-  time = 0;
-  done = false;
-  wasInterval = true;
+  g.time = 0;
+  g.done = false;
+  g.wasInterval = true;
   stop();
-  render(time);
+  render(g.time);
 }
 
 function readSettings() {
@@ -359,6 +385,22 @@ elems.start.addEventListener('click', () => {
 elems.stop.addEventListener('click', () => {
   audioManager.playSound('beep');
   stop();
+});
+elems.current.addEventListener('click', () => {
+  audioManager.playSound('beep');
+  const t = getTimerInfo(g.time);
+  if (!t.isDone) {
+    g.time = (t.round - 1) * (t.roundDuration) + (t.isInterval ? 0 : settings.duration);
+    start();
+  }
+});
+elems.next.addEventListener('click', () => {
+  audioManager.playSound('beep');
+  const t = getTimerInfo(g.time);
+  if (!t.isDone) {
+    g.time = (t.round) * (t.roundDuration) + (t.isInterval ? -settings.pause : 0);
+    start();
+  }
 });
 
 function getElements(spec) {
