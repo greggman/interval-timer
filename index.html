@@ -178,7 +178,13 @@ body {
 
     </div>
   </body>
+  <script src="interval-timer.js"></script>
   <script>
+const sounds = {
+  beep:     { jsfx: ["sine",0.0000,0.4000,0.0000,0.0980,0.0000,0.0120,20.0000,1740.0000,2400.0000,0.0000,0.0000,0.0000,0.0100,0.0003,0.0000,0.0000,0.0000,0.4435,0.0000,0.0000,0.0000,0.0000,1.0000,0.0000,0.0000,0.1000,0.0000], },
+  longBeep: { jsfx: ["sine",0.0000,1.0000,0.0000,0.8460,0.0000,0.0340,20.0000,1740.0000,2400.0000,0.0000,0.0000,0.0000,0.0100,0.0003,0.0000,0.0000,0.0000,0.4435,0.0000,0.0000,0.0000,0.0000,1.0000,0.0000,0.0000,0.1000,0.0000], },
+};
+const audioManager = new AudioManager(sounds);
 const $ = document.querySelector.bind(document);
 const elems = getElements({
   body: 'body',
@@ -201,6 +207,8 @@ const settings = {
 let then = 0;
 let time = 0;
 let requestId;
+let wasInterval;
+let done = false;
 
 function update(now) {
   requestId = undefined;
@@ -214,6 +222,10 @@ function update(now) {
   run();
 }
 
+function longBeep() {
+  audioManager.playSound('longBeep');
+}
+
 function render(time) {
   const roundDuration = settings.duration + settings.pause;
   const totalTime = getTotalTime();
@@ -222,9 +234,21 @@ function render(time) {
   if (isDone) {
     time = totalTime;
     stop();
+    if (!done) {
+      done = true;
+      setTimeout(longBeep, 0);
+      setTimeout(longBeep, 1000);
+      setTimeout(longBeep, 2000);
+    }
   }
   const roundPauseTime = time % roundDuration;
   const isInterval = roundPauseTime <= settings.duration;
+
+  if (isInterval !== wasInterval) {
+    wasInterval = isInterval;
+    audioManager.playSound('longBeep');
+  }
+
   const roundTime = isInterval 
     ? settings.duration - roundPauseTime 
     : settings.pause - (roundPauseTime - settings.duration);
@@ -283,6 +307,8 @@ function start() {
 
 function reset() {
   time = 0;
+  done = false;
+  wasInterval = true;
   stop();
   render(time);
 }
@@ -321,9 +347,18 @@ readSettings();
 writeSettings();
 reset();
 
-elems.reset.addEventListener('click', reset);
-elems.start.addEventListener('click', start);
-elems.stop.addEventListener('click', stop);
+elems.reset.addEventListener('click', () => {
+  audioManager.playSound('beep');
+  reset();
+});
+elems.start.addEventListener('click', () => {
+  audioManager.playSound('beep');
+  start();
+});
+elems.stop.addEventListener('click', () => {
+  audioManager.playSound('beep');
+  stop();
+});
 
 function getElements(spec) {
   const elems = {};
