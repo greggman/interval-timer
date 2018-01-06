@@ -8,10 +8,6 @@ you want and then make a bookmark.
 ## TO DO
 
 * Add a settings UI
-* Add sounds
-* Fix font sizing
-* Use SVG for icons
-* Use SVG for clock?
 * Handle Mobile
 * Localize?
 
