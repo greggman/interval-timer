@@ -182,6 +182,11 @@ a {
   gbackground: #040;
 }
 
+.about img {
+   width: 1em;
+   height: 1em;
+}
+
 .dialog {
   position: absolute;
   top: 0;
@@ -275,14 +280,7 @@ a {
       <div class="controls">
         <div class="reset">
           <div>
-            <svg viewBox="0 0 256 256" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421;">
-                <g transform="matrix(-0.821458,0.570269,0.570269,0.821458,155.172,-50.141)">
-                    <path d="M217,128C217,177.121 177.12,217 128,217C78.88,217 39,177.12 39,128C39,78.88 78.88,39 128,39L128,63C92.126,63 63,92.126 63,128C63,163.874 92.126,193 128,193C163.874,193 193,163.874 193,128L217,128Z" style="fill:white;"/>
-                </g>
-                <g transform="matrix(0.600201,0.509818,0.478011,-0.562755,-38.5738,48.6685)">
-                    <path d="M128,12L168,92L88,92L128,12Z" style="fill:white;"/>
-                </g>
-            </svg>
+            <img src="images/reset.svg" />
           </div>
         </div>
         <div class="curnext">
@@ -293,16 +291,10 @@ a {
         </div>
         <div class="start-stop">
           <div class="start">
-             <svg viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421;">
-                 <g transform="matrix(6.12323e-17,1,-1,6.12323e-17,64,0)">
-                     <path d="M32,9L55,55L9,55L32,9Z" style="fill:white;"/>
-                 </g>
-             </svg>
+             <img src="images/start.svg" />
           </div>
           <div class="stop" style="display: none;">
-             <svg viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421;">
-                 <rect x="9" y="9" width="46" height="46" style="fill:white;"/>
-             </svg>
+             <img src="images/stop.svg" />
           </div>
         </div>
       </div>
@@ -318,27 +310,19 @@ a {
       <div>
         <div class="desc">
           <h1>An Interval Timer</h1>
+          <p>
+           Reset: <img src="images/reset.svg" />
+           Start: <img src="images/start.svg" />
+           Stop: <img src="images/stop.svg" />
+          </p>
           <p>On iOS/Android click the share icon
-<svg width="1em" height="1em" viewBox="0 0 256 256" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:5;">
-    <g transform="matrix(1,0,0,1,1.42109e-14,37)">
-        <path d="M151,46L210,46L210,210L46,210L46,46L105,46" style="fill:none;stroke:white;stroke-width:15px;"/>
-    </g>
-    <g transform="matrix(1.33588,0,0,1.75,-42.9924,-34.75)">
-        <path d="M159,48.664L128,25L97,48.664L128,25L128,125" style="fill:none;stroke:white;stroke-width:10px;"/>
-    </g>
-</svg>
+          <img src="images/share.svg" />
           and select "Add to Home Screen" once you've made your setings.
           </p>
           <p>
           On Desktop make a bookmark to save your settings.
           </p>
-          <p><a target="_blank" href="https://github.com/greggman/interval-timer/">
-<svg width="1.5em" height="1.5em" viewBox="0 0 256 256" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421;">
-    <g transform="matrix(6.92918,0,0,6.92918,127.99,238.982)">
-        <path d="M0,-31.904C-8.995,-31.904 -16.288,-24.611 -16.288,-15.614C-16.288,-8.417 -11.621,-2.312 -5.148,-0.157C-4.333,-0.008 -4.036,-0.511 -4.036,-0.943C-4.036,-1.329 -4.05,-2.354 -4.058,-3.713C-8.589,-2.729 -9.545,-5.897 -9.545,-5.897C-10.286,-7.779 -11.354,-8.28 -11.354,-8.28C-12.833,-9.29 -11.242,-9.27 -11.242,-9.27C-9.607,-9.155 -8.747,-7.591 -8.747,-7.591C-7.294,-5.102 -4.934,-5.821 -4.006,-6.238C-3.858,-7.29 -3.438,-8.008 -2.972,-8.415C-6.589,-8.826 -10.392,-10.224 -10.392,-16.466C-10.392,-18.244 -9.757,-19.698 -8.715,-20.837C-8.883,-21.249 -9.442,-22.905 -8.556,-25.148C-8.556,-25.148 -7.188,-25.586 -4.076,-23.478C-2.777,-23.84 -1.383,-24.02 0.002,-24.026C1.385,-24.02 2.779,-23.84 4.08,-23.478C7.19,-25.586 8.555,-25.148 8.555,-25.148C9.444,-22.905 8.885,-21.249 8.717,-20.837C9.761,-19.698 10.392,-18.244 10.392,-16.466C10.392,-10.208 6.583,-8.831 2.954,-8.428C3.539,-7.925 4.06,-6.931 4.06,-5.411C4.06,-3.234 4.04,-1.477 4.04,-0.943C4.04,-0.507 4.333,0 5.16,-0.159C11.628,-2.318 16.291,-8.419 16.291,-15.614C16.291,-24.611 8.997,-31.904 0,-31.904" style="fill:white;"/>
-    </g>
-</svg>
-          </a>
+          <p><a target="_blank" href="https://github.com/greggman/interval-timer/"><img src="images/octocat.svg" /></a>
           </p>
         </div>
         <div class="done">done</div>
