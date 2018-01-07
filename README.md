@@ -7,9 +7,6 @@ you want and then make a bookmark.
 
 ## TO DO
 
-* Animate Current and Next work
-* Add a settings UI
-* Handle Mobile
 * Localize?
 
 
