@@ -256,7 +256,6 @@ a {
       <div class="toolbar">
         <div>&#9881; Settings</div>
         <div class="aboutButton">About</div>
-        <div>Bookmark to save</div>
       </div>
       <div class="round-time">
         <div class="mins">00</div>
@@ -317,10 +316,7 @@ a {
           </p>
           <p>On iOS/Android click the share icon
           <img src="images/share.svg" />
-          and select "Add to Home Screen" once you've made your setings.
-          </p>
-          <p>
-          On Desktop make a bookmark to save your settings.
+          and select "Add to Home Screen" for a better experience.
           </p>
           <p><a target="_blank" href="https://github.com/greggman/interval-timer/"><img src="images/octocat.svg" /></a>
           </p>
@@ -532,6 +528,16 @@ function reset() {
 }
 
 function readSettings() {
+  try {
+    const newSettings = JSON.parse(localStorage.getItem('settings'));
+    Object.keys(newSettings).forEach((key) => {
+      let newValue = newSettings[key];
+      if (settings[key]) {
+        settings[key] = newValue;
+      }
+    });
+  } catch (e) {
+  }
   const search = window.location.search;
   if (search) {
     (search.startsWith('?') ? search.substring(1) : search).split('&').forEach((pair) => {
@@ -554,11 +560,12 @@ function readSettings() {
 }
 
 function writeSettings() {
-  const search = Object.keys(settings).map((key) => {
-    return `${encodeURIComponent(key)}=${encodeURIComponent(settings[key])}`;
-  }).join('&');
-  window.history.replaceState(settings, '', 
-    `${window.location.origin}${window.location.pathname}?${search}`);
+  //const search = Object.keys(settings).map((key) => {
+  //  return `${encodeURIComponent(key)}=${encodeURIComponent(settings[key])}`;
+  //}).join('&');
+  //window.history.replaceState(settings, '',
+  //  `${window.location.origin}${window.location.pathname}?${search}`);
+  localStorage.setItem('settings', JSON.stringify(settings));
 }
 
 function setRoundBreak(round, isInterval) {
