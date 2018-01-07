@@ -18,6 +18,7 @@ body {
   background-color: #0A0;
   color: white;
   font-family: sans-serif;
+  overflow: hidden;
 }
 .outer {
   width: 100vw;
@@ -87,9 +88,14 @@ body {
   font-size: 6.5vw;
   gborder-top: 1px solid white;
 }
-.controls>div {
+.controls .reset,
+.controls .start-stop {
   display: flex;
   align-items: center;
+}
+.controls .curnext {
+  display: flex;
+  align-items: stretch;
 }
 .controls>div>div {
   flex: 1 1 auto;
@@ -99,21 +105,47 @@ body {
   flex: 1 1 10%;
   text-align: center;
   background: rgba(0, 0, 0, .2);
+  padding: 5px;
 }
-
-.controls .current,
-.controls .next {
-  flex: 1 1 40%;
-  text-align: center;
+.controls .curnext {
+  flex: 1 1 80%;
+  gbackground: #0FF;
+  position: relative;
 }
-
+.controls .curnext .allouter {
+  position: relative;
+  width: 80px;
+  gbackground: #F0F;
+  overflow: hidden;
+}
+.controls .curnext .allouter .all {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  gbackground: #FF0;
+  white-space: nowrap;
+  font-size: 0;
+  transition: transform 0.25s cubic-bezier(0.55, 0.06, 0.68, 0.19);
+  display: flex;
+  align-items: stretch;
+}
+.controls .curnext .allouter .all>div {
+  flex: 0 0 50%;
+  font-size: 6.5vw;
+  width: 50%;
+  display: flex;
+  align-items: center;
+}
+.controls .curnext .allouter .all>div>div {
+  padding-left: 10px;
+}
 .controls .reset {
   gbackground: #070;
 }
-.controls .current {
+.controls .curnext .allouter .all>div:nth-child(odd) {
   background: rgba(0, 0, 0, .3);
 }
-.controls .next {
+.controls .curnext .allouter .all>div:nth-child(even) {
   background: rgba(0, 0, 0, .4);
 }
 .controls .start-stop {
@@ -129,9 +161,7 @@ body {
   </head>
   <body>
     <div class="outer">
-      <div class="toolbar">
-          toolbar
-      </div>
+      <div class="toolbar">toolbar</div>
       <div class="round-time">
         <div class="mins">00</div>
         <div class="colon">:</div>
@@ -153,13 +183,22 @@ body {
       </div>
       <div class="controls">
         <div class="reset">
-          <div>⟳</div>
+          <div>
+            <svg viewBox="0 0 256 256" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421;">
+                <g transform="matrix(0.821458,0.570269,-0.570269,0.821458,100.828,-50.141)">
+                    <path d="M217,128C217,177.121 177.12,217 128,217C78.88,217 39,177.12 39,128C39,78.88 78.88,39 128,39L128,63C92.126,63 63,92.126 63,128C63,163.874 92.126,193 128,193C163.874,193 193,163.874 193,128L217,128Z" style="fill:white;"/>
+                </g>
+                <g transform="matrix(-0.600201,0.509818,-0.478011,-0.562755,294.574,48.6685)">
+                    <path d="M128,12L168,92L88,92L128,12Z" style="fill:white;"/>
+                </g>
+            </svg>
+          </div>
         </div>
-        <div class="current">
-          <div>Round 1</div>
-        </div>
-        <div class="next">
-          <div>Break 1</div>
+        <div class="curnext">
+          <div class="allouter">
+            <div class="all">
+            </div>
+          </div>
         </div>
         <div class="start-stop">
           <div class="start">
@@ -194,10 +233,7 @@ const elems = getElements({
   elapsed: '.parts .elapsed .value',
   rounds: '.parts .rounds .value',
   remaining: '.parts .remaining .value',
-  current: '.controls .current',
-  next: '.controls .next',
-  currentText: '.controls .current>div',
-  nextText: '.controls .next>div',
+  all: '.controls .curnext .allouter .all',
   reset: '.controls .reset',
   start: '.controls .start',
   stop: '.controls .stop',
@@ -250,6 +286,12 @@ function longBeep() {
 
 function render(time) {
   const t = getTimerInfo(time);
+  const isNewSegment = t.isInterval !== g.oldIsInterval;
+  g.oldIsInterval = t.isInterval;
+
+  if (isNewSegment) {
+    elems.all.style.transform = `translateX(-${((t.round - 1) * 2 + (t.isInterval ? 0 : 1)) * 50}%)`;
+  }
 
   elems.rounds.textContent = `${t.round}/${settings.rounds}`;
 
@@ -265,13 +307,6 @@ function render(time) {
   elems.body.style.background = t.isDone
     ? '#444'
     : (t.isInterval ? '#0A0' : '#F00');
-
-  elems.currentText.textContent = t.isDone ? 'End' : `${t.isInterval ? "Round" : "Break"}${t.round}`;
-  elems.nextText.textContent = t.isDone
-    ? ''
-    : (t.round === settings.rounds
-         ? 'End'
-         : `${t.isInterval ? "Break" : "Round"}${t.round + (t.isInterval ? 0 : 1)}`);
 }
 
 function getTimerInfo(time) {
@@ -280,7 +315,7 @@ function getTimerInfo(time) {
   const remainingTime = Math.max(0, totalTime - time);
   const isDone = remainingTime === 0;
   const roundPauseTime = time % roundDuration;
-  const isInterval = roundPauseTime <= settings.duration;
+  const isInterval = isDone ? false : roundPauseTime <= settings.duration;
   const round = (time / roundDuration) + 1 | 0;
   const roundTime = isInterval
     ? settings.duration - roundPauseTime
@@ -370,8 +405,49 @@ function writeSettings() {
     `${window.location.origin}${window.location.pathname}?${search}`);
 }
 
+function setRoundBreak(round, isInterval) {
+  audioManager.playSound('beep');
+  const t = getTimerInfo(0);
+  g.time = (round - 1) * (t.roundDuration) + (isInterval ? 0 : settings.duration);
+  start();
+}
+
+function makeSetRoundFn(round) {
+  return function() {
+    setRoundBreak(round, true);
+  };
+}
+
+function makeSetBreakFn(round) {
+  return function() {
+    setRoundBreak(round, false);
+  };
+}
+
+function createRoundElem(text, clickFn) {
+  const oelem = document.createElement('div');
+  const relem = document.createElement('div');
+  relem.innerHTML = text;
+  relem.addEventListener('click', clickFn);
+  oelem.appendChild(relem);
+  elems.all.appendChild(oelem);
+}
+
+function noop() {
+}
+
+function createRoundsElems() {
+  elems.all.innerHTML = '';
+  for (let r = 1; r <= settings.rounds; ++r) {
+    createRoundElem(`Round ${r}`, makeSetRoundFn(r));
+    createRoundElem(r === settings.rounds ? 'End' : `Break ${r}`, makeSetBreakFn(r));
+  }
+  createRoundElem('&nbsp', noop);
+}
+
 readSettings();
 writeSettings();
+createRoundsElems();
 reset();
 
 elems.reset.addEventListener('click', () => {
@@ -385,22 +461,6 @@ elems.start.addEventListener('click', () => {
 elems.stop.addEventListener('click', () => {
   audioManager.playSound('beep');
   stop();
-});
-elems.current.addEventListener('click', () => {
-  audioManager.playSound('beep');
-  const t = getTimerInfo(g.time);
-  if (!t.isDone) {
-    g.time = (t.round - 1) * (t.roundDuration) + (t.isInterval ? 0 : settings.duration);
-    start();
-  }
-});
-elems.next.addEventListener('click', () => {
-  audioManager.playSound('beep');
-  const t = getTimerInfo(g.time);
-  if (!t.isDone) {
-    g.time = (t.round) * (t.roundDuration) + (t.isInterval ? -settings.pause : 0);
-    start();
-  }
 });
 
 function getElements(spec) {
