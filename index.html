@@ -40,6 +40,37 @@ body {
   font-family: sans-serif;
   overflow: hidden;
 }
+
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]:after {
+  z-index: 2;
+  font-size: 10pt;
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  content: attr(data-tooltip);
+  padding: 6px 10px;
+  top: 1.4em;
+  left: 50%;
+  transform: translateX(-50%) translateY(-3em);
+  background: rgba(0,0,0,.8);
+  color: white;
+  white-space: nowrap;
+  z-index: 2;
+  border-radius: 2px;
+  transition: opacity 0.2s cubic-bezier(.64,.09,.08,1), transform 0.2s  cubic-bezier(.64,.09,.08,1);;
+}
+
+[data-tooltip]:hover:after {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-4em);
+}
+
 h1 {
     margin-top: 0;
 }
@@ -56,10 +87,12 @@ a {
 }
 .toolbar {
   background: rgba(0,0,0,.2);
-  padding: 10px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: stretch;
+}
+.toolbar>div {
+  padding: 10px;
 }
 .round-time {
   gbackground: #0E0;
@@ -236,6 +269,11 @@ a {
   padding: 2pt;
 }
 
+.hover:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+  cursor: pointer;
+}
+
 @media (max-aspect-ratio: 12/10) {
   .round-time {
     font-size: 30vw;
@@ -254,8 +292,8 @@ a {
   <body>
     <div class="outer">
       <div class="toolbar">
-        <div>&#9881; Settings</div>
-        <div class="aboutButton">About</div>
+        <div class="hover">&#9881; Settings</div>
+        <div class="hover aboutButton">About</div>
       </div>
       <div class="round-time">
         <div class="mins">00</div>
@@ -277,8 +315,8 @@ a {
         </div>
       </div>
       <div class="controls">
-        <div class="reset">
-          <div>
+        <div class="hover reset">
+          <div data-tooltip="reset">
             <img src="images/reset.svg" />
           </div>
         </div>
@@ -288,11 +326,11 @@ a {
             </div>
           </div>
         </div>
-        <div class="start-stop">
-          <div class="start">
+        <div class="hover start-stop">
+          <div class="start" data-tooltip="start">
              <img src="images/start.svg" />
           </div>
-          <div class="stop" style="display: none;">
+          <div class="stop" style="display: none;" data-tooltip="stop">
              <img src="images/stop.svg" />
           </div>
         </div>
@@ -302,7 +340,7 @@ a {
     <div class="settings dialog">
       <div>
         <div class="values"></div>
-        <div class="done">done</div>
+        <div class="done hover">done</div>
       </div>
     </div>
     <div class="about dialog">
@@ -321,7 +359,7 @@ a {
           <p><a target="_blank" href="https://github.com/greggman/interval-timer/"><img src="images/octocat.svg" /></a>
           </p>
         </div>
-        <div class="done">done</div>
+        <div class="done hover">done</div>
       </div>
     </div>
   </body>
@@ -380,6 +418,7 @@ function makeSettingsElems() {
     const selem = document.createElement('div');
     selem.className = 'setting';
     const lelem = document.createElement('label');
+    lelem.className = 'hover';
     lelem.setAttribute('for', id);
     lelem.textContent = info.desc;
     const ielem = document.createElement('input');
@@ -593,6 +632,7 @@ function createRoundElem(text, clickFn) {
   relem.innerHTML = text;
   relem.addEventListener('click', clickFn);
   oelem.appendChild(relem);
+  oelem.className = 'hover';
   elems.all.appendChild(oelem);
 }
 
