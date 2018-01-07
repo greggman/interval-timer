@@ -30,6 +30,9 @@ body {
 .toolbar {
   background: rgba(0,0,0,.2);
   padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .round-time {
   gbackground: #0E0;
@@ -152,6 +155,54 @@ body {
   gbackground: #040;
 }
 
+.settings {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, .8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.settings .done,
+.setting label,
+.setting value {
+  display: block;
+  padding: 2pt;
+}
+
+.settings .done {
+  padding: 10pt;
+  text-align: center;
+  background: rgba(0, 0, 0, .2);
+}
+
+.setting value {
+  display: block;
+  padding: 2pt;
+}
+
+.settings .setting {
+  margin-bottom: 10pt;
+  background: #0A0;
+}
+.settings>div {
+  background: green;
+  padding: 1em;
+  font-size: 20pt;
+  border: 1em solid black;
+}
+
+.setting input[type="text"] {
+  background: rgba(0,0,0,.2);
+  border: none;
+  font-size: 20pt;
+  padding: 2pt;
+}
+
 @media (max-aspect-ratio: 12/10) {
   .round-time {
     font-size: 30vw;
@@ -161,7 +212,10 @@ body {
   </head>
   <body>
     <div class="outer">
-      <div class="toolbar">toolbar</div>
+      <div class="toolbar">
+        <div>&#9881; Settings</div>
+        <div>Bookmark to save</div>
+      </div>
       <div class="round-time">
         <div class="mins">00</div>
         <div class="colon">:</div>
@@ -217,6 +271,12 @@ body {
       </div>
 
     </div>
+    <div class="settings">
+      <div>
+        <div class="values"></div>
+        <div class="done">done</div>
+      </div>
+    </div>
   </body>
   <script src="interval-timer.js"></script>
   <script>
@@ -228,6 +288,7 @@ const audioManager = new AudioManager(sounds);
 const $ = document.querySelector.bind(document);
 const elems = getElements({
   body: 'body',
+  toolbar: '.toolbar>div',
   mins: '.round-time .mins',
   secs: '.round-time .secs',
   elapsed: '.parts .elapsed .value',
@@ -237,12 +298,16 @@ const elems = getElements({
   reset: '.controls .reset',
   start: '.controls .start',
   stop: '.controls .stop',
+  settingsForm: '.settings',
+  settings: '.settings .values',
+  done: '.settings .done',
 });
-const settings = {
-  rounds: 30,
-  duration: 50,
-  pause: 10,
-};
+const settingsInfo = [
+ { name: 'duration', desc: 'Interval (seconds)', default: 50, },
+ { name: 'pause',    desc: 'Break (seconds)',    default: 10, },
+ { name: 'rounds',   desc: 'Rounds',             default: 30, },
+];
+const settings = makeSettings(settingsInfo);
 const g = {
   then: 0,
   time: 0,
@@ -250,6 +315,43 @@ const g = {
   wasInterval: undefined,
   done: false,
 };
+
+function makeSettings(settingsInfo) {
+  const settings = {};
+  settingsInfo.forEach((info, ndx) => {
+    settings[info.name] = info.default;
+  });
+  return settings;
+}
+
+function makeSettingsElems() {
+  settingsInfo.forEach((info, ndx) => {
+    const id = `setting-${ndx}`;
+    const selem = document.createElement('div');
+    selem.className = 'setting';
+    const lelem = document.createElement('label');
+    lelem.setAttribute('for', id);
+    lelem.textContent = info.desc;
+    const ielem = document.createElement('input');
+    ielem.title = info.desc;
+    ielem.id = id;
+    ielem.type = 'text';
+    ielem.pattern = '[0-9]*';
+    ielem.value = settings[info.name];
+    ielem.required = true;
+    selem.appendChild(lelem);
+    selem.appendChild(ielem);
+    elems.settings.appendChild(selem);
+    info.readFn = function() {
+      let newValue = parseInt(ielem.value);
+      if (isNaN(newValue) || !newValue) {
+        newValue = info.default;
+      }
+      ielem.value = newValue;
+      settings[info.name] = newValue;
+    };
+  });
+}
 
 function update(now) {
   g.requestId = undefined;
@@ -385,9 +487,9 @@ function readSettings() {
       const origValue = settings[key];
       if (origValue !== undefined) {
         if (typeof origValue === 'number') {
-          try {
-            settings[key] = parseFloat(value);
-          } catch (e) {
+          let newValue = parseInt(value);
+          if (!isNaN(newValue) && newValue) {
+            settings[key] = value;
           }
         } else {
           settings[key] = value;
@@ -447,6 +549,7 @@ function createRoundsElems() {
 
 readSettings();
 writeSettings();
+makeSettingsElems();
 createRoundsElems();
 reset();
 
@@ -461,6 +564,20 @@ elems.start.addEventListener('click', () => {
 elems.stop.addEventListener('click', () => {
   audioManager.playSound('beep');
   stop();
+});
+elems.toolbar.addEventListener('click', () => {
+  audioManager.playSound('beep');
+  stop();
+  elems.settingsForm.style.display = 'flex';
+});
+elems.done.addEventListener('click', () => {
+  audioManager.playSound('beep');
+  elems.settingsForm.style.display = '';
+  settingsInfo.forEach((info) => {
+    info.readFn();
+  });
+  writeSettings();
+  reset();
 });
 
 function getElements(spec) {
