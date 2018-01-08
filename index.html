@@ -426,6 +426,7 @@ const sounds = {
 const audioManager = new AudioManager(sounds);
 const $ = document.querySelector.bind(document);
 const elems = getElements({
+  title: 'title',
   body: 'body',
   aboutButton: '.toolbar .aboutButton',
   about: '.about',
@@ -456,6 +457,7 @@ const g = {
   requestId: undefined,
   wasInterval: undefined,
   done: false,
+  title: elems.title.textContent,
 };
 
 function makeSettings(settingsInfo) {
@@ -550,6 +552,10 @@ function render(time) {
   elems.body.style.background = t.isDone
     ? '#444'
     : (t.isInterval ? '#0A0' : '#F00');
+
+  elems.title.textContent = (t.isDone || time === 0 || document.hasFocus())
+    ? g.title 
+    : `${clock.ms} ${g.title}`;
 }
 
 function withOrWithoutHours(time, totalTime) {
