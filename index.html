@@ -544,14 +544,17 @@ function render(time) {
   elems.mins.textContent = clock.mins;
   elems.secs.textContent = clock.secs;
 
-  const elapsed = secsMinsHours(time);
-  const remain = secsMinsHours(t.remainingTime + 0.99);
-  elems.elapsed.textContent = `${elapsed.mins}:${elapsed.secs}`;
-  elems.remaining.textContent = `${remain.mins}:${remain.secs}`;
+  elems.elapsed.textContent = withOrWithoutHours(time, t.totalTime);
+  elems.remaining.textContent = withOrWithoutHours(t.remainingTime + .99, t.totalTime);
 
   elems.body.style.background = t.isDone
     ? '#444'
     : (t.isInterval ? '#0A0' : '#F00');
+}
+
+function withOrWithoutHours(time, totalTime) {
+  const smh = secsMinsHours(time);
+  return (totalTime >= 60 * 60) ? smh.hms : smh.ms;
 }
 
 function getTimerInfo(time) {
@@ -583,11 +586,14 @@ function getTotalTime() {
 }
 
 function secsMinsHours(time) {
-  return {
+  const t = {
     hours: (time / 60 / 60 | 0).toFixed(0).padStart(2, '0'),
     mins: (time / 60 % 60 | 0).toFixed(0).padStart(2, '0'),
     secs: (time % 60 | 0).toFixed(0).padStart(2, '0'),
   };
+  t.ms = `${t.mins}:${t.secs}`;
+  t.hms = `${t.hours}:${t.mins}:${t.secs}`;
+  return t;
 }
 
 function stop() {
