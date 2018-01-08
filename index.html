@@ -42,6 +42,11 @@ body {
   overflow: hidden;
 }
 
+/* these don't work on mobile. The tip ends up making the first touch
+   go to the tip and only after can the user click the button the
+   tip was meant for. I suppose I could try to detect mobile and
+   only turn these on if not mobile
+
 [data-tooltip] {
   position: relative;
 }
@@ -63,6 +68,8 @@ body {
   z-index: 2;
   border-radius: 2px;
   transition: opacity 0.2s cubic-bezier(.64,.09,.08,1), transform 0.2s  cubic-bezier(.64,.09,.08,1);;
+  pointer-events: none;
+  touch-action: none;
 }
 
 [data-tooltip]:hover:after {
@@ -70,7 +77,11 @@ body {
   opacity: 1;
   visibility: visible;
   transform: translateX(-50%) translateY(-4em);
+  pointer-events: none;
+  touch-action: none;
 }
+
+*/
 
 h1 {
     margin-top: 0;
