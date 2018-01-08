@@ -81,12 +81,22 @@ a {
 .outer {
   width: 100vw;
   height: 100vh;
+
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  -webkit-justify-content: space-between;
+
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 .toolbar {
   background: rgba(0,0,0,.2);
+
+  display: -webkit-flex;
+  -webkit-justify-content: space-between;
+  -webkit-align-items: stretch;
+
   display: flex;
   justify-content: space-between;
   align-items: stretch;
@@ -98,11 +108,17 @@ a {
   gbackground: #0E0;
   width: 100%;
   font-weight: bold;
+  font-size: 40vh;
+
+  display: -webkit-flex;
+  -webkit-justify-content: space-between;
+  -webkit-flex: 1 1 auto;
+  -webkit-align-items: center;
+
   display: flex;
   justify-content: space-between;
   flex: 1 1 auto;
   align-items: center;
-  font-size: 40vh;
 }
 .round-time .mins,
 .round-time .secs {
@@ -120,11 +136,14 @@ a {
   gbackground: #0B0;
 }
 .parts {
+  display: -webkit-flex;
+  -webkit-justify-content: space-between;
   display: flex;
   justify-content: space-between;
   padding: 10px;
 }
 .parts>div {
+  -webkit-flex: 1 1 auto;
   flex: 1 1 auto;
 }
 .parts .part-heading {
@@ -145,26 +164,39 @@ a {
   text-align: right;
 }
 .controls {
+  display: -webkit-flex;
+  -webkit-justify-content: space-between;
+  -webkit-align-items: stretch;
+
   display: flex;
   justify-content: space-between;
   align-items: stretch;
+
   font-size: 6.5vw;
   gborder-top: 1px solid white;
 }
 .controls .reset,
 .controls .start-stop {
+  display: -webkit-flex;
+  -webkit-align-items: center;
+
   display: flex;
   align-items: center;
 }
 .controls .curnext {
+  display: -webkit-flex;
+  -webkit-align-items: stretch;
+
   display: flex;
   align-items: stretch;
 }
 .controls>div>div {
+  -webkit-flex: 1 1 auto;
   flex: 1 1 auto;
 }
 .controls .reset,
 .controls .start-stop {
+  -webkit-flex: 1 1 10%;
   flex: 1 1 10%;
   text-align: center;
   background: rgba(0, 0, 0, .2);
@@ -172,6 +204,7 @@ a {
   min-width: 60px;
 }
 .controls .curnext {
+  -webkit-flex: 1 1 80%;
   flex: 1 1 80%;
   gbackground: #0FF;
   position: relative;
@@ -190,14 +223,23 @@ a {
   white-space: nowrap;
   font-size: 0;
   transition: transform 0.25s cubic-bezier(0.55, 0.06, 0.68, 0.19);
+
+  display: -webkit-flex;
+  -webkit-align-items: stretch;
+
   display: flex;
   align-items: stretch;
 }
 .controls .curnext .allouter .all>div {
-  flex: 0 0 50%;
   font-size: 6.5vw;
   width: 50%;
+
+  display: -webkit-flex;
+  -webkit-flex: 0 0 50%;
+  -webkit-align-items: center;
+
   display: flex;
+  flex: 0 0 50%;
   align-items: center;
 }
 .controls .curnext .allouter .all>div>div {
@@ -216,10 +258,14 @@ a {
   gbackground: #040;
 }
 
+img {
+    width: 100%;
+}
 .about img {
    width: 1em;
    height: 1em;
 }
+
 
 .dialog {
   position: absolute;
@@ -228,7 +274,12 @@ a {
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, .8);
+
   display: none;
+
+  -webkit-justify-content: center;
+  -webkit-align-items: center;
+
   justify-content: center;
   align-items: center;
 }
@@ -268,6 +319,7 @@ a {
   border: none;
   font-size: 20pt;
   padding: 2pt;
+  width: 100%;
 }
 
 .hover:hover {
@@ -407,14 +459,14 @@ const g = {
 
 function makeSettings(settingsInfo) {
   const settings = {};
-  settingsInfo.forEach((info, ndx) => {
+  settingsInfo.forEach(function (info, ndx) {
     settings[info.name] = info.default;
   });
   return settings;
 }
 
 function makeSettingsElems() {
-  settingsInfo.forEach((info, ndx) => {
+  settingsInfo.forEach(function (info, ndx) {
     const id = `setting-${ndx}`;
     const selem = document.createElement('div');
     selem.className = 'setting';
@@ -570,7 +622,7 @@ function reset() {
 function readSettings() {
   try {
     const newSettings = JSON.parse(localStorage.getItem('settings'));
-    Object.keys(newSettings).forEach((key) => {
+    Object.keys(newSettings).forEach(function (key) {
       let newValue = newSettings[key];
       if (settings[key]) {
         settings[key] = newValue;
@@ -580,7 +632,7 @@ function readSettings() {
   }
   const search = window.location.search;
   if (search) {
-    (search.startsWith('?') ? search.substring(1) : search).split('&').forEach((pair) => {
+    (search.startsWith('?') ? search.substring(1) : search).split('&').forEach(function (pair) {
       const keyValue = pair.split('=').map(decodeURIComponent);
       const key = keyValue[0];
       const value = keyValue[1];
@@ -600,7 +652,7 @@ function readSettings() {
 }
 
 function writeSettings() {
-  //const search = Object.keys(settings).map((key) => {
+  //const search = Object.keys(settings).map(function (key) {
   //  return `${encodeURIComponent(key)}=${encodeURIComponent(settings[key])}`;
   //}).join('&');
   //window.history.replaceState(settings, '',
@@ -655,36 +707,36 @@ makeSettingsElems();
 createRoundsElems();
 reset();
 
-elems.aboutButton.addEventListener('click', () => {
+elems.aboutButton.addEventListener('click', function () {
   audioManager.playSound('beep');
   stop();
   elems.about.style.display = 'flex';
 });
-elems.aboutDone.addEventListener('click', () => {
+elems.aboutDone.addEventListener('click', function () {
   audioManager.playSound('beep');
   elems.about.style.display = '';
 });
-elems.reset.addEventListener('click', () => {
+elems.reset.addEventListener('click', function () {
   audioManager.playSound('beep');
   reset();
 });
-elems.start.addEventListener('click', () => {
+elems.start.addEventListener('click', function () {
   audioManager.playSound('beep');
   start();
 });
-elems.stop.addEventListener('click', () => {
+elems.stop.addEventListener('click', function () {
   audioManager.playSound('beep');
   stop();
 });
-elems.toolbar.addEventListener('click', () => {
+elems.toolbar.addEventListener('click', function () {
   audioManager.playSound('beep');
   stop();
   elems.settingsForm.style.display = 'flex';
 });
-elems.done.addEventListener('click', () => {
+elems.done.addEventListener('click', function () {
   audioManager.playSound('beep');
   elems.settingsForm.style.display = '';
-  settingsInfo.forEach((info) => {
+  settingsInfo.forEach(function (info) {
     info.readFn();
   });
   writeSettings();
@@ -693,7 +745,7 @@ elems.done.addEventListener('click', () => {
 
 function getElements(spec) {
   const elems = {};
-  Object.keys(spec).forEach((key) => {
+  Object.keys(spec).forEach(function (key) {
     elems[key] = document.querySelector(spec[key]);
   });
   return elems;
