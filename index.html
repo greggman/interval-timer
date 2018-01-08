@@ -434,8 +434,10 @@ img {
       </div>
     </div>
   </body>
+  <script src="3rdparty/NoSleep.min.js"></script>
   <script src="interval-timer.js"></script>
   <script>
+const noSleep = new NoSleep();
 const sounds = {
   beep:     { jsfx: ["sine",0.0000,0.4000,0.0000,0.0980,0.0000,0.0120,20.0000,1740.0000,2400.0000,0.0000,0.0000,0.0000,0.0100,0.0003,0.0000,0.0000,0.0000,0.4435,0.0000,0.0000,0.0000,0.0000,1.0000,0.0000,0.0000,0.1000,0.0000], },
   longBeep: { jsfx: ["sine",0.0000,1.0000,0.0000,0.8460,0.0000,0.0340,20.0000,1740.0000,2400.0000,0.0000,0.0000,0.0000,0.0100,0.0003,0.0000,0.0000,0.0000,0.4435,0.0000,0.0000,0.0000,0.0000,1.0000,0.0000,0.0000,0.1000,0.0000], },
@@ -640,6 +642,7 @@ function stop() {
   }
   elems.stop.style.display = 'none';
   elems.start.style.display = 'block';
+  noSleep.disable();
 }
 
 function run() {
@@ -649,6 +652,7 @@ function run() {
 }
 
 function start() {
+  noSleep.enable();
   elems.stop.style.display = 'block';
   elems.start.style.display = 'none';
   g.then = performance.now();
