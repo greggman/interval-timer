@@ -602,9 +602,23 @@ function secsMinsHours(time) {
   return t;
 }
 
+function setLoop(fn) {
+  // return requestAnimationFrame(fn);
+  // Using setInterval so it keeps running when not
+  // front tab
+  return setTimeout(function() {
+    fn(performance.now());
+  }, 50);
+}
+
+function clearLoop(id) {
+  // clearAnimationFrame(id);
+  clearTimeout(id);
+}
+
 function stop() {
   if (g.requestId) {
-    cancelAnimationFrame(g.requestId);
+    clearLoop(g.requestId);
     g.requestId = undefined;
   }
   elems.stop.style.display = 'none';
@@ -613,7 +627,7 @@ function stop() {
 
 function run() {
   if (!g.requestId) {
-    g.requestId = requestAnimationFrame(update);
+    g.requestId = setLoop(update, 50);
   }
 }
 
