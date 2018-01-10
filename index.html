@@ -705,7 +705,10 @@ function writeSettings() {
   //}).join('&');
   //window.history.replaceState(settings, '',
   //  `${window.location.origin}${window.location.pathname}?${search}`);
-  localStorage.setItem('settings', JSON.stringify(settings));
+  try {
+    localStorage.setItem('settings', JSON.stringify(settings));
+  } catch (e) {
+  }
 }
 
 function setRoundBreak(round, isInterval) {
