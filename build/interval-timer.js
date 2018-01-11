@@ -1,7 +1,7 @@
 define([
     './js/audio',
   ], function (
-    AudioManager,
+    AudioManager
   ) {
   window.AudioManager = AudioManager;
 });
