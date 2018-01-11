@@ -126,7 +126,6 @@ a {
   gbackground: #0E0;
   width: 100%;
   font-weight: bold;
-  font-size: 40vh;
 
   display: -webkit-flex;
   -webkit-justify-content: space-between;
@@ -137,21 +136,24 @@ a {
   justify-content: space-between;
   flex: 1 1 auto;
   align-items: center;
+  position: relative;
 }
-.round-time .mins,
-.round-time .secs {
-  flex: 1 1 40%;
+.round-time>div {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+
+  display: -webkit-flex;
+  -webkit-align-items: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.round-time .mins {
-  gbackground: #0D0;
-  text-align: right;
-}
-.round-time .colon {
-  gbackground: #0C0;
-  text-align: center;
-}
-.round-time .secs {
-  gbackground: #0B0;
+.round-time svg {
+    padding: 30px 10px;
+    width: 100%;
+    height: 100%;
 }
 .parts {
   display: -webkit-flex;
@@ -345,11 +347,40 @@ img {
   cursor: pointer;
 }
 
-@media (max-aspect-ratio: 12/10) {
-  .round-time {
-    font-size: 30vw;
+@media (max-aspect-ratio: 1/1) {
+  .round-time svg {
+    height: 60vw;
   }
 }
+
+@media (min-aspect-ratio: 840/580) {
+  .round-time svg {
+     gbackground: purple;
+  }
+  .parts {
+    padding: 3px;
+  }
+  .parts .part-heading {
+    font-size: 6vh;
+  }
+  .parts .value {
+    font-size: 11vh;
+  }
+  .controls {
+    font-size: 9vh;
+  }
+  .controls .curnext .allouter .all>div {
+    font-size: 9vh;
+  }
+  .controls img {
+    width: 9vh;
+  }
+  .toolbar>div {
+    font-size: 3vh;
+    padding: 5px;
+  }
+}
+
 @media (max-width: 850px) {
   h1 {
      font-size: 24pt;
@@ -367,9 +398,13 @@ img {
         <div class="hover aboutButton">About</div>
       </div>
       <div class="round-time">
-        <div class="mins">00</div>
-        <div class="colon">:</div>
-        <div class="secs">00</div>
+        <div>
+  <svg preserveAspectRatio="none" viewBox="0 0 1280 720" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421;">
+      <g transform="matrix(36.5429,0,0,81.0554,-22120.3,-33994.9)">
+          <text text-anchor="middle" id="secsmins" x="622.783px" y="428.14px" style="font-family:'Arial-Black', 'Arial Black', sans-serif;font-weight:900;font-size:12px;fill:white;">00:00</text>
+      </g>
+  </svg>
+        </div>
       </div>
       <div class="parts">
         <div class="elapsed">
@@ -451,8 +486,9 @@ const elems = getElements({
   about: '.about',
   aboutDone: '.about .done',
   toolbar: '.toolbar>div',
-  mins: '.round-time .mins',
-  secs: '.round-time .secs',
+//  mins: '.round-time .mins',
+//  secs: '.round-time .secs',
+  secsmins: '#secsmins',
   elapsed: '.parts .elapsed .value',
   rounds: '.parts .rounds .value',
   remaining: '.parts .remaining .value',
@@ -573,8 +609,9 @@ function render(time) {
   elems.rounds.textContent = `${t.round}/${settings.rounds}`;
 
   const clock = secsMinsHours(t.roundTime + 0.99);
-  elems.mins.textContent = clock.mins;
-  elems.secs.textContent = clock.secs;
+  //elems.mins.textContent = clock.mins;
+  //elems.secs.textContent = clock.secs;
+  elems.secsmins.textContent = `${clock.mins}:${clock.secs}`;
 
   elems.elapsed.textContent = withOrWithoutHours(time, t.totalTime);
   elems.remaining.textContent = withOrWithoutHours(t.remainingTime + .99, t.totalTime);
