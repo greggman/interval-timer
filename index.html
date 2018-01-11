@@ -531,6 +531,9 @@ function update() {
     g.time = now - g.startTime;
   }
 
+  // save the timer settings in case
+  // the page gets reloaded (iOS)
+  writeTimerSettings();
 
   const t = getTimerInfo(g.time);
   if (t.isDone) {
@@ -654,6 +657,8 @@ function stop() {
   if (g.running) {
     g.running = false;
     g.stopTime = getCurrentTime();
+    // need to record we were not running
+    writeTimerSettings();
   }
 }
 
@@ -688,15 +693,43 @@ function reset() {
   render(g.time);
 }
 
+function applyExistingProperties(dst, src) {
+  Object.keys(src).forEach(function (key) {
+    let newValue = src[key];
+    if (dst[key] !== undefined) {
+      dst[key] = newValue;
+    }
+  });
+}
+
+function readTimerSettings() {
+  try {
+    const timerSettings = JSON.parse(localStorage.getItem('timerSettings'));
+    if (timerSettings.started) {
+      const t = getTimerInfo(timerSettings.time);
+      if (t.isDone) {
+        return;
+      }
+      setTimeout(function() {
+        if (timerSettings.running) {
+          start();
+        } else {
+          g.stopTime = getCurrentTime();
+        }
+        g.started = true;
+        g.startTime = getCurrentTime() - timerSettings.time;
+        g.time = timerSettings.time;
+        render(g.time);
+      });
+    }
+  } catch (e) {
+  }
+}
+
 function readSettings() {
   try {
     const newSettings = JSON.parse(localStorage.getItem('settings'));
-    Object.keys(newSettings).forEach(function (key) {
-      let newValue = newSettings[key];
-      if (settings[key]) {
-        settings[key] = newValue;
-      }
-    });
+    applyExistingProperties(settings, newSettings);
   } catch (e) {
   }
   const search = window.location.search;
@@ -717,6 +750,17 @@ function readSettings() {
         }
       }
     });
+  }
+}
+
+function writeTimerSettings() {
+  try {
+    localStorage.setItem('timerSettings', JSON.stringify({
+      started: g.started,
+      running: g.running,
+      time: g.time,
+    }));
+  } catch (e) {
   }
 }
 
@@ -777,6 +821,7 @@ function createRoundsElems() {
 
 readSettings();
 writeSettings();
+readTimerSettings();
 makeSettingsElems();
 createRoundsElems();
 reset();
