@@ -126,7 +126,7 @@ a {
 .clockarea {
   position: relative;
   gwidth: 100%;
-  gheight: 100%;
+  hheight: 100%;
 
   -webkit-flex: 1 1 auto;
   flex: 1 1 auto;
@@ -145,12 +145,16 @@ a {
   height: 100%;
 
   display: -webkit-flex;
-  -webkit-align-items: center;
-  -webkit-justify-content: center;
+  /* -webkit-align-items: center; */
+  /* -webkit-justify-content: center; */
+  -webkit-align-items: flex-start;
+  -webkit-justify-content: flex-start;
 
   display: flex;
-  align-items: center;
-  justify-content: center;
+  /* align-items: center; */
+  /* justify-content: center; */
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 .clockarea .pause>div {
     position: absolute;
@@ -181,14 +185,10 @@ a {
   font-weight: bold;
 
   display: -webkit-flex;
-  -webkit-justify-content: space-between;
   -webkit-flex: 1 1 auto;
-  -webkit-align-items: center;
 
   display: flex;
-  justify-content: space-between;
   flex: 1 1 auto;
-  align-items: center;
   position: relative;
 }
 .round-time>div {
