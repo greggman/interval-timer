@@ -471,12 +471,14 @@ const settingsInfo = [
 ];
 const settings = makeSettings(settingsInfo);
 const g = {
-  then: 0,
   time: 0,
   requestId: undefined,
   wasInterval: undefined,
   done: false,
   title: elems.title.textContent,
+  running: false,   // curious if I should use a flag. Could also look at requestId
+  started: false,
+  startTime: 0,     // time (real time on wall clock) we started
 };
 
 function makeSettings(settingsInfo) {
@@ -517,12 +519,18 @@ function makeSettingsElems() {
   });
 }
 
-function update(now) {
-  g.requestId = undefined;
-  const elapsedTime = (now - g.then) * 0.001;
-  g.then = now;
+function getCurrentTime() {
+  return Date.now() * 0.001;
+}
 
-  g.time += elapsedTime;
+function update() {
+  g.requestId = undefined;
+
+  if (g.running) {
+    const now = getCurrentTime();
+    g.time = now - g.startTime;
+  }
+
 
   const t = getTimerInfo(g.time);
   if (t.isDone) {
@@ -643,6 +651,10 @@ function stop() {
   elems.stop.style.display = 'none';
   elems.start.style.display = 'block';
   noSleep.disable();
+  if (g.running) {
+    g.running = false;
+    g.stopTime = getCurrentTime();
+  }
 }
 
 function run() {
@@ -655,7 +667,15 @@ function start() {
   noSleep.enable();
   elems.stop.style.display = 'block';
   elems.start.style.display = 'none';
-  g.then = performance.now();
+  if (!g.running) {
+    g.running = true;
+    if (!g.started) {
+      g.started = true;
+      g.startTime = getCurrentTime();
+    } else {
+      g.startTime += getCurrentTime() - g.stopTime;
+    }
+  }
   run();
 }
 
@@ -663,6 +683,7 @@ function reset() {
   g.time = 0;
   g.done = false;
   g.wasInterval = true;
+  g.started = false;
   stop();
   render(g.time);
 }
@@ -713,9 +734,11 @@ function writeSettings() {
 
 function setRoundBreak(round, isInterval) {
   audioManager.playSound('beep');
-  const t = getTimerInfo(0);
-  g.time = (round - 1) * (t.roundDuration) + (isInterval ? 0 : settings.duration);
   start();
+  // set start time after since start will set the time
+  const t = getTimerInfo(0);
+  const time = (round - 1) * (t.roundDuration) + (isInterval ? 0 : settings.duration);
+  g.startTime = getCurrentTime() - time;
 }
 
 function makeSetRoundFn(round) {
