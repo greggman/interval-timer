@@ -101,6 +101,7 @@ a {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  position: absolute;
 }
 .toolbar {
   background: rgba(0,0,0,.2);
@@ -121,6 +122,58 @@ a {
 
   display: flex;
   align-items: center;
+}
+.clockarea {
+  position: relative;
+  gwidth: 100%;
+  gheight: 100%;
+
+  -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
+}
+.clockarea>div {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.clockarea .pause {
+  background: rgba(0, 0, 0, .8);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+
+  display: -webkit-flex;
+  -webkit-align-items: center;
+  -webkit-justify-content: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.clockarea .pause>div {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.clockarea .pause img {
+    width: 100%;
+    height: 100%;
+}
+
+.clockinfo {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  -webkit-justify-content: space-between;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .round-time {
   gbackground: #0E0;
@@ -145,15 +198,16 @@ a {
 
   display: -webkit-flex;
   -webkit-align-items: center;
+  -webkit-justify-content: center;
 
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.round-time svg {
-    padding: 30px 10px;
-    width: 100%;
-    height: 100%;
+.round-time .clock {
+  padding: 30px 10px;
+  width: 100%;
+  height: 100%;
 }
 .parts {
   display: -webkit-flex;
@@ -295,7 +349,8 @@ img {
   height: 100vh;
   background: rgba(0, 0, 0, .8);
 
-  display: none;
+  display: -webkit-flex;
+  display: flex;
 
   -webkit-justify-content: center;
   -webkit-align-items: center;
@@ -348,13 +403,13 @@ img {
 }
 
 @media (max-aspect-ratio: 1/1) {
-  .round-time svg {
+  .round-time .clock {
     height: 60vw;
   }
 }
 
 @media (min-aspect-ratio: 840/580) {
-  .round-time svg {
+  .round-time .clock {
      gbackground: purple;
   }
   .parts {
@@ -397,27 +452,38 @@ img {
         <div class="hover">&#9881; Settings</div>
         <div class="hover aboutButton">About</div>
       </div>
-      <div class="round-time">
+      <div class="clockarea">
         <div>
-  <svg preserveAspectRatio="none" viewBox="0 0 1280 720" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421;">
-      <g transform="matrix(36.5429,0,0,81.0554,-22120.3,-33994.9)">
-          <text text-anchor="middle" id="secsmins" x="622.783px" y="428.14px" style="font-family:'Arial-Black', 'Arial Black', sans-serif;font-weight:900;font-size:12px;fill:white;">00:00</text>
-      </g>
-  </svg>
-        </div>
-      </div>
-      <div class="parts">
-        <div class="elapsed">
-          <div class="part-heading">elapsed</div>
-          <div class="value">00:00</div>
-        </div>
-        <div class="rounds">
-          <div class="part-heading">interval</div>
-          <div class="value">0/0</div>
-        </div>
-        <div class="remaining">
-          <div class="part-heading">remaining</div>
-          <div class="value">00:00</div>
+          <div class="clockinfo">
+            <div class="round-time">
+              <div>
+                <svg class="clock" preserveAspectRatio="none" viewBox="0 0 1280 720" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421;">
+                    <g transform="matrix(36.5429,0,0,81.0554,-22120.3,-33994.9)">
+                        <text text-anchor="middle" id="secsmins" x="622.783px" y="428.14px" style="font-family:'Arial-Black', 'Arial Black', sans-serif;font-weight:900;font-size:12px;fill:white;">00:00</text>
+                    </g>
+                </svg>
+              </div>
+            </div>
+            <div class="parts">
+              <div class="elapsed">
+                <div class="part-heading">elapsed</div>
+                <div class="value">00:00</div>
+              </div>
+              <div class="rounds">
+                <div class="part-heading">interval</div>
+                <div class="value">0/0</div>
+              </div>
+              <div class="remaining">
+                <div class="part-heading">remaining</div>
+                <div class="value">00:00</div>
+              </div>
+            </div>
+          </div>
+          <div class="pause" style="display: none;">
+            <div>
+              <img src="images/start.svg" />
+            </div>
+          </div>
         </div>
       </div>
       <div class="controls">
@@ -443,13 +509,13 @@ img {
       </div>
 
     </div>
-    <div class="settings dialog">
+    <div class="settings dialog" style="display: none;">
       <div>
         <div class="values"></div>
         <div class="done hover">done</div>
       </div>
     </div>
-    <div class="about dialog">
+    <div class="about dialog" style="display: none;">
       <div>
         <div class="desc">
           <h1>An Interval Timer</h1>
@@ -486,9 +552,8 @@ const elems = getElements({
   about: '.about',
   aboutDone: '.about .done',
   toolbar: '.toolbar>div',
-//  mins: '.round-time .mins',
-//  secs: '.round-time .secs',
   secsmins: '#secsmins',
+  pause: '.clockarea .pause',
   elapsed: '.parts .elapsed .value',
   rounds: '.parts .rounds .value',
   remaining: '.parts .remaining .value',
@@ -690,6 +755,7 @@ function stop() {
   }
   elems.stop.style.display = 'none';
   elems.start.style.display = 'block';
+  elems.pause.style.display = 'none';
   noSleep.disable();
   if (g.running) {
     g.running = false;
@@ -709,6 +775,7 @@ function start() {
   noSleep.enable();
   elems.stop.style.display = 'block';
   elems.start.style.display = 'none';
+  elems.pause.style.display = 'none';
   if (!g.running) {
     g.running = true;
     if (!g.started) {
@@ -749,10 +816,9 @@ function readTimerSettings() {
       }
       setTimeout(function() {
         if (timerSettings.running) {
-          start();
-        } else {
-          g.stopTime = getCurrentTime();
+          elems.pause.style.display = '';
         }
+        g.stopTime = getCurrentTime();
         g.started = true;
         g.startTime = getCurrentTime() - timerSettings.time;
         g.time = timerSettings.time;
@@ -863,40 +929,52 @@ makeSettingsElems();
 createRoundsElems();
 reset();
 
-elems.aboutButton.addEventListener('click', function () {
-  audioManager.playSound('beep');
-  stop();
-  elems.about.style.display = 'flex';
-});
-elems.aboutDone.addEventListener('click', function () {
-  audioManager.playSound('beep');
-  elems.about.style.display = '';
-});
-elems.reset.addEventListener('click', function () {
-  audioManager.playSound('beep');
-  reset();
-});
-elems.start.addEventListener('click', function () {
-  audioManager.playSound('beep');
-  start();
-});
-elems.stop.addEventListener('click', function () {
-  audioManager.playSound('beep');
-  stop();
-});
-elems.toolbar.addEventListener('click', function () {
-  audioManager.playSound('beep');
-  stop();
-  elems.settingsForm.style.display = 'flex';
-});
-elems.done.addEventListener('click', function () {
-  audioManager.playSound('beep');
-  elems.settingsForm.style.display = '';
-  settingsInfo.forEach(function (info) {
-    info.readFn();
+function addClickListeners(listeners) {
+  Object.keys(listeners).forEach(function(key) {
+    elems[key].addEventListener('click', listeners[key]);
   });
-  writeSettings();
-  reset();
+}
+
+addClickListeners({
+  aboutButton: function () {
+    audioManager.playSound('beep');
+    stop();
+    elems.about.style.display = '';
+  },
+  aboutDone: function () {
+    audioManager.playSound('beep');
+    elems.about.style.display = 'none';
+  },
+  reset: function () {
+    audioManager.playSound('beep');
+    reset();
+  },
+  start: function () {
+    audioManager.playSound('beep');
+    start();
+  },
+  stop: function () {
+    audioManager.playSound('beep');
+    stop();
+  },
+  toolbar: function () {
+    audioManager.playSound('beep');
+    stop();
+    elems.settingsForm.style.display = '';
+  },
+  pause: function() {
+    audioManager.playSound('beep');
+    start();
+  },
+  done: function () {
+    audioManager.playSound('beep');
+    elems.settingsForm.style.display = 'none';
+    settingsInfo.forEach(function (info) {
+      info.readFn();
+    });
+    writeSettings();
+    reset();
+  },
 });
 
 function getElements(spec) {
