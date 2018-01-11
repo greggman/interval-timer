@@ -801,7 +801,7 @@ function createRoundElem(text, clickFn) {
   const oelem = document.createElement('div');
   const relem = document.createElement('div');
   relem.innerHTML = text;
-  relem.addEventListener('click', clickFn);
+  oelem.addEventListener('click', clickFn);
   oelem.appendChild(relem);
   oelem.className = 'hover';
   elems.all.appendChild(oelem);
