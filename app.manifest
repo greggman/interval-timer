@@ -1,0 +1,14 @@
+CACHE MANIFEST
+
+# version 1
+
+icon.png
+images/reset.svg
+images/stop.svg
+images/start.svg
+images/play.svg
+images/share.svg
+images/pause.svg
+images/octocat.svg
+interval-timer.js
+3rdparty/NoSleep.min.js
