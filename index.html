@@ -799,6 +799,7 @@ function reset() {
   g.wasInterval = true;
   g.started = false;
   stop();
+  createRoundsElems();
   render(g.time);
 }
 
@@ -931,7 +932,6 @@ readSettings();
 writeSettings();
 readTimerSettings();
 makeSettingsElems();
-createRoundsElems();
 reset();
 
 function addClickListeners(listeners) {
