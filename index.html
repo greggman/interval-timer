@@ -665,6 +665,8 @@ function longBeep() {
   audioManager.playSound('longBeep');
 }
 
+const toZeroRE = /\d/g;
+
 function render(time) {
   const t = getTimerInfo(time);
   const isNewSegment = t.isInterval !== g.oldIsInterval;
@@ -679,7 +681,7 @@ function render(time) {
   const clock = secsMinsHours(t.roundTime + 0.99);
   //elems.mins.textContent = clock.mins;
   //elems.secs.textContent = clock.secs;
-  elems.secsmins.textContent = `${clock.mins}:${clock.secs}`;
+  elems.secsmins.textContent = `${clock.mins}:${clock.secs}`.replace(t.isDone ? toZeroRE : '-', '0');
 
   elems.elapsed.textContent = withOrWithoutHours(time, t.totalTime);
   elems.remaining.textContent = withOrWithoutHours(t.remainingTime + .99, t.totalTime);
