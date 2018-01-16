@@ -583,7 +583,21 @@ const g = {
   running: false,   // curious if I should use a flag. Could also look at requestId
   started: false,
   startTime: 0,     // time (real time on wall clock) we started
+  muteOnce: false,
 };
+
+function playSound(name) {
+  if (muteOnce) {
+    muteOnce = false;
+  } else {
+    audioManager.playSound(name);
+  }
+}
+
+function beep() {
+  muteOnce = true;
+  audioManager.playSound('beep');
+}
 
 function makeSettings(settingsInfo) {
   const settings = {};
@@ -653,7 +667,7 @@ function update() {
 
   if (t.isInterval !== g.wasInterval) {
     g.wasInterval = t.isInterval;
-    audioManager.playSound('longBeep');
+    playSound('longBeep');
   }
 
   render(g.time);
@@ -662,7 +676,7 @@ function update() {
 }
 
 function longBeep() {
-  audioManager.playSound('longBeep');
+  playSound('longBeep');
 }
 
 const toZeroRE = /\d/g;
@@ -886,7 +900,7 @@ function writeSettings() {
 }
 
 function setRoundBreak(round, isInterval) {
-  audioManager.playSound('beep');
+  beep();
   start();
   // set start time after since start will set the time
   const t = getTimerInfo(0);
@@ -942,37 +956,37 @@ function addClickListeners(listeners) {
 
 addClickListeners({
   aboutButton: function () {
-    audioManager.playSound('beep');
+    beep();
     stop();
     elems.about.style.display = '';
   },
   aboutDone: function () {
-    audioManager.playSound('beep');
+    beep();
     elems.about.style.display = 'none';
   },
   reset: function () {
-    audioManager.playSound('beep');
+    beep();
     reset();
   },
   start: function () {
-    audioManager.playSound('beep');
+    beep();
     start();
   },
   stop: function () {
-    audioManager.playSound('beep');
+    beep();
     stop();
   },
   toolbar: function () {
-    audioManager.playSound('beep');
+    beep();
     stop();
     elems.settingsForm.style.display = '';
   },
   pause: function() {
-    audioManager.playSound('beep');
+    beep();
     start();
   },
   done: function () {
-    audioManager.playSound('beep');
+    beep();
     elems.settingsForm.style.display = 'none';
     settingsInfo.forEach(function (info) {
       info.readFn();
