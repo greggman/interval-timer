@@ -686,15 +686,15 @@ function render(time) {
   const isNewSegment = t.isInterval !== g.oldIsInterval;
   g.oldIsInterval = t.isInterval;
 
-  if (isNewSegment) {
-    elems.all.style.transform = `translateX(-${((t.round - 1) * 2 + (t.isInterval ? 0 : 1)) * 50}%)`;
+  const timelinePos = ((t.round - 1) * 2 + (t.isInterval ? 0 : 1)) * 50;
+  if (timelinePos != g.oldTimelinePos) {
+    g.oldTimelinePos = timelinePos;
+    elems.all.style.transform = `translateX(-${timelinePos}%)`;
   }
 
   elems.rounds.textContent = `${t.round}/${settings.rounds}`;
 
   const clock = secsMinsHours(t.roundTime + 0.99);
-  //elems.mins.textContent = clock.mins;
-  //elems.secs.textContent = clock.secs;
   elems.secsmins.textContent = `${clock.mins}:${clock.secs}`.replace(t.isDone ? toZeroRE : '-', '0');
 
   elems.elapsed.textContent = withOrWithoutHours(time, t.totalTime);
