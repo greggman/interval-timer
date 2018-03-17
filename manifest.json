@@ -1,0 +1,15 @@
+{
+  "short_name": "Interval Timer",
+  "name": "Interval Timer",
+  "icons": [
+    {
+      "src": "icon.png",
+      "type": "image/png",
+      "sizes": "128x128"
+    }
+  ],
+  "start_url": "index.html",
+  "background_color": "#00C",
+  "theme_color": "#00C",
+  "display": "standalone"
+}
