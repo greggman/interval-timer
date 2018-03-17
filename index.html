@@ -810,7 +810,7 @@ function start() {
 function reset() {
   g.time = 0;
   g.done = false;
-  g.wasInterval = true;
+  g.wasInterval = false;
   g.started = false;
   stop();
   createRoundsElems();
@@ -905,6 +905,7 @@ function setRoundBreak(round, isInterval) {
   // set start time after since start will set the time
   const t = getTimerInfo(0);
   const time = (round - 1) * (t.roundDuration) + (isInterval ? 0 : settings.duration);
+  g.wasInterval = !isInterval;
   g.startTime = getCurrentTime() - time;
 }
 
