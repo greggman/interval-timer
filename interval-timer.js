@@ -453,13 +453,9 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
       return filename.substring(0, filename.length - 3) + ext;
     };
 
-    this.needUserGesture = (function() {
-      var iOS = ( navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false );
-      var needUserGesture = iOS;
-      return function() {
-        return needUserGesture;
-      };
-    }());
+    this.needUserGesture = function() {
+      return true;
+    };
 
     this.on = g_eventEmitter.on.bind(g_eventEmitter);
     this.addListener = this.on;
